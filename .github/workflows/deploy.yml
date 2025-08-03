@@ -1,4 +1,4 @@
-name: 🚀 Trigger Render Deploy
+name: 🚀 Deploy to Render
 
 on:
   push:
@@ -10,5 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Trigger Render Deployment
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Trigger Render Deploy
         run: curl "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
