@@ -1,8 +1,29 @@
 services:
   - type: web
-    name: blind-ai-backend
+    name: exceptional-blinds-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn backend.app:app
+    repo: https://github.com/BeckyJoV/exceptional-blinds-visualizer-app
+    branch: master
+
+  - type: static
+    name: exceptional-blinds-frontend
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/build
+    repo: https://github.com/BeckyJoV/exceptional-blinds-visualizer-app
+    branch: master
+
+  - type: web
+    name: flask-visualizer
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn src.app:app --host 0.0.0.0 --port 10000
+    startCommand: python app.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 5000
 
