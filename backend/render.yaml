@@ -1,12 +1,22 @@
 services:
   - type: web
-    name: blind-ai-backend
+    name: exceptional-blinds-backend
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn src.app:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.app:app --host 0.0.0.0 --port $PORT
+    buildFilter:
+      paths:
+        - backend/
     envVars:
       - key: SECRET_KEY
         value: your-secret-value
 
-
+  - type: static
+    name: exceptional-blinds-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    buildFilter:
+      paths:
+        - frontend/

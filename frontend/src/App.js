@@ -5,6 +5,8 @@ import BlindOverlay from './components/BlindOverlay';
 import logo from './assets/exceptional-logo.png';
 import './App.css';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const App = () => {
   const [image, setImage] = useState(null);
   const [color, setColor] = useState('#888');
@@ -22,6 +24,28 @@ const App = () => {
       link.click();
     } catch (error) {
       console.error('Download failed:', error);
+    }
+  };
+
+  const handlePredict = async () => {
+    if (!image) return;
+
+    try {
+      const formData = new FormData();
+      const response = await fetch(image);
+      const blob = await response.blob();
+      formData.append('file', blob, 'room.png');
+
+      const res = await fetch(`${apiUrl}/predict`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await res.json();
+      console.log('Prediction result:', result);
+      // You can use result to update UI if needed
+    } catch (error) {
+      console.error('Prediction failed:', error);
     }
   };
 
@@ -74,26 +98,37 @@ const App = () => {
       </div>
 
       {/* Buttons */}
-<div className="w-full max-w-md mx-auto flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
-  <div className="w-full sm:w-auto">
-    <button
-      onClick={handleDownload}
-      className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700"
-    >
-      Download Styled Image
-    </button>
-  </div>
+      <div className="w-full max-w-md mx-auto flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
+        <div className="w-full sm:w-auto">
+          <button
+            onClick={handleDownload}
+            className="w-full sm:w-auto px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Download Styled Image
+          </button>
+        </div>
 
-  {image && (
-    <div className="w-full sm:w-auto">
-      <a href={image} download="original-room.png">
-        <button className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700">
-          Download Original Image
-        </button>
-      </a>
-    </div>
-  )}
-</div>
+        {image && (
+          <>
+            <div className="w-full sm:w-auto">
+              <a href={image} download="original-room.png">
+                <button className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700">
+                  Download Original Image
+                </button>
+              </a>
+            </div>
+
+            <div className="w-full sm:w-auto">
+              <button
+                onClick={handlePredict}
+                className="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded hover:bg-purple-700"
+              >
+                Predict Style
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
